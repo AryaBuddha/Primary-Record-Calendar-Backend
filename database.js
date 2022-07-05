@@ -25,17 +25,21 @@ const eventsDatabase = client.db("CalendarIntegration").collection("events");
 
 
 const doesUserExist = async (user) => {
-
+    
     const result = await refreshDatabase.findOne({
         user: user
     })
-    console.log(result)
-    if(result != null){
+    
+    
+    if(result == null){
         
         return result
-    } else {
-        return false
+    } else if (result != null){
+        
+        return true
     }
+
+ 
     
 }
 

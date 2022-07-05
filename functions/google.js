@@ -6,7 +6,6 @@ const {
 
 const {
     doesUserExist,
-    database,
     refreshDatabase
 } = require('../database.js')
 
