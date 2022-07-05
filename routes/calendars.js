@@ -33,7 +33,7 @@ exports.getCal = async (req, res) => {
                     })
                 })
                 res.set("Content-Type", "text/calendar")
-                //res.send(cal.toString())
+                res.send(cal.toString())
                 
             })
         }
