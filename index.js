@@ -29,8 +29,9 @@ app.post('/events/getAll', events.getAll)
 app.post('/events/edit', events.edit)
 app.post('/events/delete', events.delete)
 
-app.get('/calendars/get/:calUid', calendars.get)
 
+app.get('/calendars/getCal/:calUid', calendars.getCal)
+app.post('/calendars/getUid', calendars.getUid)
 
 
 app.post('/googleauth', (req, res) => {

@@ -31,12 +31,12 @@ const doesUserExist = async (user) => {
     })
     
     
-    if(result == null){
+    if(result != null){
         
         return result
-    } else if (result != null){
+    } else if (result == null){
         
-        return true
+        return false
     }
 
  
