@@ -34,13 +34,14 @@ app.get('/calendars/getCal/:calUid', calendars.getCal)
 app.post('/calendars/getUid', calendars.getUid)
 
 
-app.post('/googleauth', (req, res) => {
+app.post('/googleauth', async (req, res) => {
 
-    const response = saveGoogleRefresh(req.body.code, req.body.user)
+    const response = await saveGoogleRefresh(req.body.code)
 
     res.send({
         message: "Payload recieved",
-        status: 200
+        status: 200,
+        user: response
     })
 })
 
@@ -60,9 +61,11 @@ app.post('/addcal', async (req, res) => {
 
         })
     }
-
     
 })
+
+
+
 
 
 app.listen(port, () => {

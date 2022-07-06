@@ -1,5 +1,3 @@
-const axios = require('axios');
-const querystring = require('querystring');
 const {
     google
 } = require('googleapis');
@@ -10,7 +8,7 @@ const {
 } = require('../database.js')
 
 const dotenv = require('dotenv');
-const { callbackify } = require('util');
+const { auth } = require('googleapis/build/src/apis/abusiveexperiencereport/index.js');
 dotenv.config()
 
 
@@ -20,7 +18,7 @@ const oauthClient = new google.auth.OAuth2(
     process.env.GOOGLE_REDIRECT_URL
 )
 
-const saveGoogleRefresh = async (authCode, user) => {
+const saveGoogleRefresh = async (authCode) => {
 
 
     let {
@@ -28,8 +26,19 @@ const saveGoogleRefresh = async (authCode, user) => {
     } = await oauthClient.getToken(authCode)
     oauthClient.setCredentials(tokens)
     google.options({auth: oauthClient});
-    console.log("thehokreok", tokens)
+    
 
+
+    const auth2 = google.oauth2({
+        version: 'v2',
+        oauthClient
+    })
+
+    //const user = "bob@gmail.com"
+    let user = await auth2.userinfo.get()
+    user = user.data.email
+    
+    //const user = await auth2.userinfo.get().data.email
 
 
     const calendar = google.calendar({
@@ -43,19 +52,17 @@ const saveGoogleRefresh = async (authCode, user) => {
             timeZone: "America/Indianapolis"
         }
     })
-    
-    console.log(doesUserExist(user))
 
 
-    database.insertOne({
+    refreshDatabase.insertOne({
         google_refreshToken: tokens.refresh_token,
         user: user,
         google_calendarId: cal.data.id
     })
 
-if (await doesUserExist(user)) {
+    if (await doesUserExist(user)) {
     
-        await database.updateOne({
+        await refreshDatabase.updateOne({
             user: user
         }, {
             $set: {
@@ -65,12 +72,14 @@ if (await doesUserExist(user)) {
         })
     } else {
 
-        database.insertOne({
+        refreshDatabase.insertOne({
             google_refreshToken: tokens.refresh_token,
             user: user,
             google_calendarId: cal.data.id
         })
     } 
+
+    return user
 
 }
 
@@ -79,7 +88,7 @@ if (await doesUserExist(user)) {
 
 
 const addGoogleEvent =  async (eventDetails, userDataObj, callback) => {
-    //Geneate access token using google oauth library
+    
     console.log(userDataObj)
     oauthClient.setCredentials({
         refresh_token: userDataObj.google_refreshToken
@@ -93,10 +102,10 @@ const addGoogleEvent =  async (eventDetails, userDataObj, callback) => {
     });
     
     
-    const primaryID = Math.floor(Math.random() * (100000000 - 1) + 1)
+    const primaryId = Math.floor(Math.random() * (100000000 - 1) + 1)
 
     
-    eventDetails.description = `Primary Record ID: ${primaryID} \n\n${eventDetails.description}`
+    eventDetails.description = `Primary Record ID: ${primaryId} \n\n${eventDetails.description}`
 
     calendar.events.insert({
         auth: oauthClient,
@@ -110,7 +119,7 @@ const addGoogleEvent =  async (eventDetails, userDataObj, callback) => {
         console.log('Event created: %s', event.htmlLink);
         //console.log(event)
         console.log(event.data.id)
-        callback(event.data.id, primaryID)
+        callback(event.data.id, primaryId)
         
         
     })
@@ -121,7 +130,7 @@ const addGoogleEvent =  async (eventDetails, userDataObj, callback) => {
 }
 
 
-const editGoogleEvent = async (eventDetails, userDataObj, googleEventID) => {
+const editGoogleEvent = async (eventDetails, userDataObj, googleEventId) => {
     oauthClient.setCredentials({
         refresh_token: userDataObj.google_refreshToken
     });
@@ -134,7 +143,7 @@ const editGoogleEvent = async (eventDetails, userDataObj, googleEventID) => {
 
     const res = await calendar.events.update({
         calendarId: userDataObj.google_calendarId,
-        eventId: googleEventID,
+        eventId: googleEventId,
         sendNotifications: true,
         requestBody: eventDetails
     })    
@@ -144,7 +153,7 @@ const editGoogleEvent = async (eventDetails, userDataObj, googleEventID) => {
 
 
 
-const deleteGoogleEvent = async (eventID, userDataObj) => {
+const deleteGoogleEvent = async (eventId, userDataObj) => {
 
     oauthClient.setCredentials({
         refresh_token: userDataObj.google_refreshToken
@@ -158,7 +167,7 @@ const deleteGoogleEvent = async (eventID, userDataObj) => {
 
     await calendar.events.delete({
         calendarId: userDataObj.google_calendarId,
-        eventId: eventID,
+        eventId: eventId,
         sendNotifications: true,
     })
 }
@@ -173,9 +182,9 @@ const getUserGoogleCalendarID = async (user) => {
 
 
 module.exports = {
-    saveGoogleRefresh: saveGoogleRefresh,
-    addGoogleEvent: addGoogleEvent,
-    editGoogleEvent: editGoogleEvent,
-    deleteGoogleEvent: deleteGoogleEvent,
-    getUserGoogleCalendarID: getUserGoogleCalendarID
+    saveGoogleRefresh,
+    addGoogleEvent,
+    editGoogleEvent,
+    deleteGoogleEvent,
+    getUserGoogleCalendarID
 }

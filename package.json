@@ -13,7 +13,6 @@
     "ical-generator": "^3.4.3",
     "mongodb": "^4.6.0",
     "nodemon": "^2.0.16",
-    "querystring": "^0.2.1",
     "uuid": "^8.3.2",
     "uuid4": "^2.0.2"
   },

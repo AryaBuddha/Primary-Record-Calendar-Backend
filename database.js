@@ -59,22 +59,17 @@ const getAllUserEvents = async (user, callback) => {
 
 
 
-const createEvent = async (eventDetails, user, googleEventID, primaryID) => {
+const createEvent = async (details) => {
 
-    const result = await eventsDatabase.insertOne({
-        event: eventDetails,
-        user: user,
-        googleEventID: googleEventID,
-        primaryID: primaryID
-    })
+    const result = await eventsDatabase.insertOne(details)
 }   
 
 
-const editEvent = async(eventDetails, primaryID) => {
+const editEvent = async(eventDetails, primaryId) => {
 
 
     const result = await eventsDatabase.updateOne({
-        primaryID: primaryID
+        primaryId: primaryId
     }, {
         $set: {
             event: eventDetails
@@ -83,15 +78,26 @@ const editEvent = async(eventDetails, primaryID) => {
 }
 
 
-const deleteEvent = async(primaryID) => {
-    console.log(primaryID)
+const deleteEvent = async(primaryId) => {
+    console.log(primaryId)
     const result = await eventsDatabase.deleteOne({
-        primaryID: primaryID
+        primaryId: primaryId
     })
 }
 
 
-
+const whichService = async(user) => {
+    const result = await refreshDatabase.findOne({
+        user: user
+    })
+    if(result.google_calendarId != null){
+        return "google"
+    } else if (result.iCalID != null){
+        return "ical"
+    } else {
+        return "none"
+    }
+}
 
 
 
@@ -104,5 +110,6 @@ module.exports = {
     createEvent,
     getAllUserEvents,
     editEvent,
-    deleteEvent
+    deleteEvent,
+    whichService
 };
