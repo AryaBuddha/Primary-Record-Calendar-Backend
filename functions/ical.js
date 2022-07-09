@@ -23,7 +23,11 @@ const saveiCal = async (user) => {
         })
         return uniqueCal
     } else {
-        return false 
+        const res = await refreshDatabase.findOne({
+            user: user
+        })
+        console.log("this is the res of the res" + res)
+        return res.iCalID
     }
 
 

@@ -87,16 +87,24 @@ const deleteEvent = async(primaryId) => {
 
 
 const whichService = async(user) => {
+    console.log("Which Service user:  " +user)
     const result = await refreshDatabase.findOne({
         user: user
     })
-    if(result.google_calendarId != null){
-        return "google"
-    } else if (result.iCalID != null){
-        return "ical"
-    } else {
+    console.log("fsadsfad"+result)
+    if(result == null){
         return "none"
+    } else {
+
+        if(result.google_calendarId != null){
+            return "google"
+        } else if (result.iCalID != null){
+            return "ical"
+        } else {
+            return "none"
+        }
     }
+
 }
 
 

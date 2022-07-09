@@ -14,6 +14,7 @@ const {
 
 const events = require('./routes/events.js')
 const calendars = require('./routes/calendars.js')
+const { whichService } = require('./database.js')
 
 const logger = (req, res, next) => {
     const time = Date.now()
@@ -33,6 +34,15 @@ app.post('/events/delete', events.delete)
 app.get('/calendars/getCal/:calUid', calendars.getCal)
 app.post('/calendars/getUid', calendars.getUid)
 
+app.post('/services', async (req, res) => {
+    console.log(req.body)
+    const result =  await whichService(req.body.user)
+
+    res.send({
+        service: result
+    })
+})
+
 
 app.post('/googleauth', async (req, res) => {
 
@@ -48,19 +58,14 @@ app.post('/googleauth', async (req, res) => {
 
 app.post('/addcal', async (req, res) => {
     const response = await saveiCal(req.body.user)
-    if(!response) {
-        res.send({
-            message: "User already exists!",
-            status: 403
-        })
-    } else {
-        res.send({
-        message: "Payload recieved",
-        iCalID: response,
-        status: 200
+    console.log("This is the response: " + response)
+    res.send({
+    message: "Payload recieved",
+    iCalID: response,
+    status: 200
 
-        })
-    }
+    })
+    
     
 })
 
