@@ -16,10 +16,10 @@ const {
 
 
 exports.add = async (req, res) => {
-    console.log(whichService(req.body.user))
+    
 
     const userObj = await doesUserExist(req.body.user)
-    console.log(userObj)
+    
 
     if(userObj){
 
@@ -61,7 +61,7 @@ exports.add = async (req, res) => {
 
 exports.getAll = async (req, res) => {
     const refreshTok = await doesUserExist(req.body.user)
-    console.log(req.body.user)
+    
     if(refreshTok){
         await getAllUserEvents(req.body.user, (events) => {
             res.send({
@@ -113,7 +113,7 @@ exports.edit = async(req, res) => {
 
 
 exports.delete = async(req, res) => {
-    console.log("THIS IS THE THING", req.body)
+    
     const userObj = await doesUserExist(req.body.user)
     if(userObj){
         await deleteEvent(req.body.primaryId)

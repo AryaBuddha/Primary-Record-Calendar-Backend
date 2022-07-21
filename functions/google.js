@@ -34,11 +34,10 @@ const saveGoogleRefresh = async (authCode) => {
         oauthClient
     })
 
-    //const user = "bob@gmail.com"
+    
     let user = await auth2.userinfo.get()
     user = user.data.email
-    
-    //const user = await auth2.userinfo.get().data.email
+
 
 
     const calendar = google.calendar({
@@ -48,7 +47,7 @@ const saveGoogleRefresh = async (authCode) => {
     const cal = await calendar.calendars.insert({
         requestBody:{
 
-            summary: "Primary Record",
+            summary: `Primary Record - ${user}`,
             timeZone: "America/Indianapolis"
         }
     })
@@ -105,7 +104,8 @@ const addGoogleEvent =  async (eventDetails, userDataObj, callback) => {
     const primaryId = Math.floor(Math.random() * (100000000 - 1) + 1)
 
     
-    eventDetails.description = `Primary Record ID: ${primaryId} \n\n${eventDetails.description}`
+    eventDetails.description = `Primary Record Link: https://primary-record.com/event/${primaryId} \n\nNotes:\n${eventDetails.description}`
+    delete eventDetails.url
 
     calendar.events.insert({
         auth: oauthClient,
@@ -123,9 +123,6 @@ const addGoogleEvent =  async (eventDetails, userDataObj, callback) => {
         
         
     })
- 
-
-    
 
 }
 
@@ -153,7 +150,7 @@ const editGoogleEvent = async (eventDetails, userDataObj, googleEventId) => {
 
 
 
-const deleteGoogleEvent = async (eventId, userDataObj) => {
+const deleteGoogleEvent = async (googleEventId, userDataObj) => {
 
     oauthClient.setCredentials({
         refresh_token: userDataObj.google_refreshToken
@@ -167,7 +164,7 @@ const deleteGoogleEvent = async (eventId, userDataObj) => {
 
     await calendar.events.delete({
         calendarId: userDataObj.google_calendarId,
-        eventId: eventId,
+        eventId: googleEventId,
         sendNotifications: true,
     })
 }

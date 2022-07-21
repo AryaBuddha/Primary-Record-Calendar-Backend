@@ -4,7 +4,7 @@ const ical = require("ical-generator")
 
 exports.getCal = async (req, res) => {
     const uid = req.params.calUid
-    console.log(uid)
+    
  
     refreshDatabase.findOne({iCalID: uid}, (err, doc) => {
         if (err) {
@@ -18,7 +18,7 @@ exports.getCal = async (req, res) => {
                 name: "Calendar for " + doc.user,
                 domain: "https://calendar-integration.herokuapp.com",
                 prodId: { company: "Primary Record", product: "Calendar Integration" },
-                timezone: "America/New_York",
+                timezone: "America/Indiana/Indianapolis",
                 ttl: 60
             })
 
@@ -40,33 +40,11 @@ exports.getCal = async (req, res) => {
     })
 
 
-  /*   const cal = ical({name: "Calendar for " + req.body.user})
-    const iCalEvents = []
-    const rawCalEvents = []
-    if(doesUserExist(req.body.user)) {
-        getAllUserEvents(req.body.user, (events) => {
-            
-            events.map((event) => {
-                eventInfo = event.event
-                cal.createEvent({
-                    start: eventInfo.start.dateTime,
-                    end: eventInfo.end.dateTime,
-                    summary: eventInfo.summary,
-                    description: eventInfo.description,
-                    location: eventInfo.location
-                })
-            })
-            res.send(
-                cal.toString()
-            )
-        })
-        
-    } */
 }
 
 exports.getUid = async (req, res) => {
     const user = await doesUserExist(req.body.user)
-    console.log(user)
+    
     if(user) {
         
         res.send({

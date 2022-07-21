@@ -26,7 +26,6 @@ const saveiCal = async (user) => {
         const res = await refreshDatabase.findOne({
             user: user
         })
-        console.log("this is the res of the res" + res)
         return res.iCalID
     }
 

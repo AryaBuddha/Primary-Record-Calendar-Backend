@@ -21,7 +21,7 @@ client.connect(err => {
 });
 const refreshDatabase = client.db("CalendarIntegration").collection("refreshTokens");
 const eventsDatabase = client.db("CalendarIntegration").collection("events");
-
+const prefDatabase = client.db("CalendarIntegration").collection("preferences");
 
 
 const doesUserExist = async (user) => {
@@ -61,6 +61,7 @@ const getAllUserEvents = async (user, callback) => {
 
 const createEvent = async (details) => {
 
+    details.event.url = "https://primary-record.com/events/" + details.primaryId
     const result = await eventsDatabase.insertOne(details)
 }   
 
@@ -79,7 +80,7 @@ const editEvent = async(eventDetails, primaryId) => {
 
 
 const deleteEvent = async(primaryId) => {
-    console.log(primaryId)
+    
     const result = await eventsDatabase.deleteOne({
         primaryId: primaryId
     })
@@ -87,11 +88,11 @@ const deleteEvent = async(primaryId) => {
 
 
 const whichService = async(user) => {
-    console.log("Which Service user:  " +user)
+    
     const result = await refreshDatabase.findOne({
         user: user
     })
-    console.log("fsadsfad"+result)
+    
     if(result == null){
         return "none"
     } else {
@@ -104,9 +105,15 @@ const whichService = async(user) => {
             return "none"
         }
     }
-
 }
 
+
+const getPreferences = async(user) => {
+    const result = await prefDatabase.findOne({
+        user: user
+    })
+    return result
+}
 
 
 
@@ -119,5 +126,6 @@ module.exports = {
     getAllUserEvents,
     editEvent,
     deleteEvent,
-    whichService
+    whichService,
+    getPreferences
 };

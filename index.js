@@ -14,7 +14,7 @@ const {
 
 const events = require('./routes/events.js')
 const calendars = require('./routes/calendars.js')
-const { whichService } = require('./database.js')
+const { whichService, getPreferences } = require('./database.js')
 
 const logger = (req, res, next) => {
     const time = Date.now()
@@ -41,6 +41,12 @@ app.post('/services', async (req, res) => {
     res.send({
         service: result
     })
+})
+
+app.post('/preferences', async (req, res) => {
+    
+    const result =  await getPreferences(req.body.user)
+    res.send(result)
 })
 
 
